@@ -1,0 +1,12 @@
+[submodule "server"]
+	path = server
+	url = https://github.com/Wondermove-Inc/k-o11y-server.git
+[submodule "install"]
+	path = install
+	url = https://github.com/Wondermove-Inc/k-o11y-install.git
+[submodule "otel-collector"]
+	path = otel-collector
+	url = https://github.com/Wondermove-Inc/k-o11y-otel-collector.git
+[submodule "otel-gateway"]
+	path = otel-gateway
+	url = https://github.com/Wondermove-Inc/k-o11y-otel-gateway.git

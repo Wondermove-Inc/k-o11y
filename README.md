@@ -1,5 +1,7 @@
 # K-O11y
 
+[English](README.md) | [한국어](README.ko.md)
+
 Kubernetes Observability Platform built on SigNoz, OpenTelemetry, and Beyla eBPF.
 
 ## Components

@@ -1,5 +1,7 @@
 # K-O11y
 
+[English](README.md) | [한국어](README.ko.md)
+
 SigNoz, OpenTelemetry, Beyla eBPF 기반의 Kubernetes 관측성 플랫폼.
 
 ## 구성 요소

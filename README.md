@@ -22,17 +22,56 @@ Built on [OpenTelemetry](https://opentelemetry.io/), [Beyla eBPF](https://grafan
 
 ## 📸 Screenshots
 
-<!-- TODO: Add screenshots after setting up demo environment -->
-<!-- Suggested order:
-  1. Dashboard overview
-  2. ServiceMap topology visualization
-  3. Distributed tracing waterfall
-  4. Log search / explore
-  5. Metric dashboard (K8s cluster health)
-  6. Alert rules management
--->
+<div align="center">
+  <img src="docs/images/01-insight-dashboard.png" alt="K-O11y Insight Dashboard" width="100%" />
+  <p><em>Unified cluster insight — CPU, memory, pods, nodes, and trend graphs in a single view.</em></p>
+</div>
 
-_Screenshots coming soon._
+### 🔭 Observability in One Place
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/images/02-logs-explorer.png" alt="Logs Explorer" />
+      <p align="center"><strong>📝 Logs</strong><br/><sub>Frequency chart + severity filters + full-text search</sub></p>
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/images/03-traces-explorer.png" alt="Traces Explorer" />
+      <p align="center"><strong>🔍 Traces</strong><br/><sub>Distributed tracing across services with rich filters</sub></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/images/05-services-apm.png" alt="Services APM" />
+      <p align="center"><strong>📈 APM</strong><br/><sub>p50/p90/p99 latency, Apdex, and key operations</sub></p>
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/images/04-infrastructure-drill.png" alt="Infrastructure Drill-down" />
+      <p align="center"><strong>🏗️ Infrastructure</strong><br/><sub>Pod-level metrics, logs, traces, and events</sub></p>
+    </td>
+  </tr>
+</table>
+
+### 🐞 Exceptions
+
+<div align="center">
+  <img src="docs/images/06-exceptions-trace-link.png" alt="Exception stacktrace with spanID and traceID" width="100%" />
+  <p><em>Capture stack traces with <code>spanID</code> and <code>traceID</code> attached — jump straight from an exception into its distributed trace.</em></p>
+</div>
+
+### 💾 Data Lifecycle
+
+<div align="center">
+  <img src="docs/images/07-data-lifecycle-tiering.png" alt="Data Lifecycle — Hot / Warm (S3) / Cold (Glacier IR)" width="100%" />
+  <p><em>Per-signal retention with native <strong>Hot → Warm (S3) → Cold (Glacier IR)</strong> tiering configured from the UI.</em></p>
+</div>
+
+### 🔔 Alerts
+
+<div align="center">
+  <img src="docs/images/08-alerts-settings.png" alt="Alertmanager + notification channels" width="100%" />
+  <p><em>Alertmanager settings, SMTP, and pluggable notification channels — all configurable from the UI.</em></p>
+</div>
 
 ---
 

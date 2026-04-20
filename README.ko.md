@@ -22,17 +22,56 @@
 
 ## 📸 스크린샷
 
-<!-- TODO: 데모 환경 구축 후 스크린샷 추가 -->
-<!-- 추천 순서:
-  1. 대시보드 개요
-  2. ServiceMap 토폴로지 시각화
-  3. 분산 트레이싱 워터폴
-  4. 로그 검색 / 탐색
-  5. 메트릭 대시보드 (K8s 클러스터 상태)
-  6. 알림 규칙 관리
--->
+<div align="center">
+  <img src="docs/images/01-insight-dashboard.png" alt="K-O11y Insight 대시보드" width="100%" />
+  <p><em>통합 클러스터 인사이트 — CPU, 메모리, Pod, Node, 트렌드 그래프를 한 화면에.</em></p>
+</div>
 
-_스크린샷은 곧 추가됩니다._
+### 🔭 한 곳에서 모든 관측성
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/images/02-logs-explorer.png" alt="로그 익스플로러" />
+      <p align="center"><strong>📝 Logs</strong><br/><sub>빈도 차트 + Severity 필터 + 전문 검색</sub></p>
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/images/03-traces-explorer.png" alt="트레이스 익스플로러" />
+      <p align="center"><strong>🔍 Traces</strong><br/><sub>서비스 간 분산 트레이싱 + 풍부한 필터</sub></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/images/05-services-apm.png" alt="서비스 APM" />
+      <p align="center"><strong>📈 APM</strong><br/><sub>p50/p90/p99 레이턴시, Apdex, 주요 오퍼레이션</sub></p>
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/images/04-infrastructure-drill.png" alt="인프라스트럭처 드릴다운" />
+      <p align="center"><strong>🏗️ Infrastructure</strong><br/><sub>Pod 단위 메트릭 · 로그 · 트레이스 · 이벤트</sub></p>
+    </td>
+  </tr>
+</table>
+
+### 🐞 Exceptions
+
+<div align="center">
+  <img src="docs/images/06-exceptions-trace-link.png" alt="예외 스택트레이스 + spanID/traceID" width="100%" />
+  <p><em>Exception에 <code>spanID</code>와 <code>traceID</code>가 함께 기록 — 스택트레이스에서 바로 분산 트레이스로 이동.</em></p>
+</div>
+
+### 💾 Data Lifecycle
+
+<div align="center">
+  <img src="docs/images/07-data-lifecycle-tiering.png" alt="Data Lifecycle — Hot / Warm(S3) / Cold(Glacier IR)" width="100%" />
+  <p><em>시그널별 보존 기간 설정 + 네이티브 <strong>Hot → Warm(S3) → Cold(Glacier IR)</strong> 티어링을 UI에서 구성.</em></p>
+</div>
+
+### 🔔 Alerts
+
+<div align="center">
+  <img src="docs/images/08-alerts-settings.png" alt="Alertmanager + 알림 채널" width="100%" />
+  <p><em>Alertmanager, SMTP, 다양한 알림 채널을 UI에서 설정.</em></p>
+</div>
 
 ---
 

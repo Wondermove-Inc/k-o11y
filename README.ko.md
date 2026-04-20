@@ -352,12 +352,12 @@ K-O11y가 유용하다고 느끼셨다면 star를 부탁드립니다 — 다른 
 
 - 🐛 **버그 리포트 & 기능 요청**: [GitHub Issues](https://github.com/Wondermove-Inc/k-o11y/issues)
 - 💭 **질문 & 토론**: 이슈로 문의해주세요 (GitHub Discussions는 곧 활성화 예정)
-- 🌐 **웹사이트**: [wondermove.net](https://wondermove.net)
+- 🌐 **웹사이트**: [www.skuberplus.com](https://www.skuberplus.com)
 
 ---
 
 <div align="center">
 
-**[Wondermove](https://wondermove.net)가 개발 및 관리합니다**
+**[Wondermove](https://www.skuberplus.com)가 개발 및 관리합니다**
 
 </div>

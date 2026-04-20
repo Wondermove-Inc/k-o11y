@@ -14,7 +14,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/Wondermove-Inc/k-o11y?style=social)](https://github.com/Wondermove-Inc/k-o11y/stargazers)
 [![Release](https://img.shields.io/github/v/release/Wondermove-Inc/k-o11y-server?label=release)](https://github.com/Wondermove-Inc/k-o11y-server/releases)
 
-Built on [SigNoz](https://signoz.io/), [OpenTelemetry](https://opentelemetry.io/), [Beyla eBPF](https://grafana.com/oss/beyla-ebpf/), and [ClickHouse](https://clickhouse.com/).
+Built on [OpenTelemetry](https://opentelemetry.io/), [Beyla eBPF](https://grafana.com/oss/beyla-ebpf/), and [ClickHouse](https://clickhouse.com/).
 
 </div>
 
@@ -24,7 +24,7 @@ Built on [SigNoz](https://signoz.io/), [OpenTelemetry](https://opentelemetry.io/
 
 <!-- TODO: Add screenshots after setting up demo environment -->
 <!-- Suggested order:
-  1. Dashboard overview (SigNoz main view)
+  1. Dashboard overview
   2. ServiceMap topology visualization
   3. Distributed tracing waterfall
   4. Log search / explore
@@ -32,7 +32,7 @@ Built on [SigNoz](https://signoz.io/), [OpenTelemetry](https://opentelemetry.io/
   6. Alert rules management
 -->
 
-_Screenshots coming soon. In the meantime, check out the [SigNoz live demo](https://signoz.io/demo/) — our UI is based on SigNoz._
+_Screenshots coming soon._
 
 ---
 
@@ -85,7 +85,7 @@ flowchart TB
         Gateway["K-O11y OTel Gateway<br/>+ License Guard Extension<br/>+ License Gate Processor"]
 
         subgraph Server["K-O11y Server"]
-            Frontend[Frontend UI<br/>React + SigNoz]
+            Frontend[Frontend UI<br/>React]
             QueryService[Query Service<br/>+ S3 Tiering + SSO]
             AlertManager[Alert Manager]
             Core[Core API<br/>ko11y-core<br/>ServiceMap batch]
@@ -133,13 +133,13 @@ flowchart TB
 2. OTel Collectors in each Agent cluster enrich with K8s + CRD labels, batch, and forward via OTLP gRPC
 3. Host's K-O11y Gateway validates license (RS256 JWT), gates data through License Gate Processor, and persists to ClickHouse
 4. ClickHouse on a dedicated VM tiers data Hot → Warm → Cold automatically; a systemd DB Agent manages S3 lifecycle and Glacier backups
-5. Users explore via SigNoz-based UI
+5. Users explore via the web UI
 
 ---
 
 ## 🎯 Why K-O11y?
 
-K-O11y exists to serve a specific gap: **teams who need SigNoz-grade observability but cannot use SaaS** — regulated industries, air-gapped environments, multi-cluster fleets, or teams wary of vendor lock-in.
+K-O11y exists to serve a specific gap: **teams who need production-grade observability but cannot use SaaS** — regulated industries, air-gapped environments, multi-cluster fleets, or teams wary of vendor lock-in.
 
 | Need | SaaS (Datadog, etc.) | DIY (Prom + Grafana + Jaeger + Loki) | K-O11y |
 |------|---|---|---|
@@ -225,10 +225,10 @@ K-O11y is composed of four repositories, included here as git submodules.
 
 | Component | Repository | Description |
 |-----------|-----------|-------------|
-| 🧠 **Server** | [k-o11y-server](https://github.com/Wondermove-Inc/k-o11y-server) | Self-hosted observability backend. Monorepo with `packages/core` (Go API for ServiceMap and S3 Tiering, Go 1.24 + Gin + ClickHouse) and `packages/signoz` (SigNoz fork with React frontend and Query Service). |
+| 🧠 **Server** | [k-o11y-server](https://github.com/Wondermove-Inc/k-o11y-server) | Self-hosted observability backend. Monorepo with `packages/core` (Go API for ServiceMap and S3 Tiering, Go 1.24 + Gin + ClickHouse) and `packages/signoz` (React frontend and Query Service). |
 | 📦 **Install** | [k-o11y-install](https://github.com/Wondermove-Inc/k-o11y-install) | 6 Helm charts (`k-o11y-host`, `k-o11y-agent`, and 4 sub-charts: `k-o11y-otel-agent`, `k-o11y-apm-agent`, `k-o11y-ksm`, `k-o11y-otel-operator`) + 2 Go CLI tools: `k-o11y-db` (ClickHouse VM installer, DDL apply, S3 tiering) and `k-o11y-tls` (cert-manager setup: existing / self-signed / private-CA / Let's Encrypt). |
 | 📡 **OTel Collector** | [k-o11y-otel-collector](https://github.com/Wondermove-Inc/k-o11y-otel-collector) | Custom OTel Collector v0.109.0 distribution with **CRD Processor** — automatically adds Kubernetes CRD labels (e.g. `k8s.rollout.name` for Argo Rollouts) to traces, metrics, and logs via a K8s Informer. Extensible to Knative, KEDA, etc. |
-| 🛂 **OTel Gateway** | [k-o11y-otel-gateway](https://github.com/Wondermove-Inc/k-o11y-otel-gateway) | SigNoz OTel Collector v0.129.2 fork with two custom components: **License Guard Extension** (RS256 JWT license validation with 7-day grace period) and **License Gate Processor** (drops telemetry when license is invalid and grace period has expired). |
+| 🛂 **OTel Gateway** | [k-o11y-otel-gateway](https://github.com/Wondermove-Inc/k-o11y-otel-gateway) | OTel Collector distribution with two custom components: **License Guard Extension** (RS256 JWT license validation with 7-day grace period) and **License Gate Processor** (drops telemetry when license is invalid and grace period has expired). |
 
 **Clone with all submodules:**
 
@@ -265,17 +265,8 @@ Not yet available.
 ### 3. Local development
 
 - **Server (core API)**: `cd packages/core && go run cmd/main.go` (requires `CLICKHOUSE_HOST`, `CLICKHOUSE_PORT`, `CLICKHOUSE_DATABASE`)
-- **Server (SigNoz backend)**: `cd packages/signoz && make go-run-community`
+- **Server (backend)**: `cd packages/signoz && make go-run-community`
 - **Frontend**: `cd packages/signoz/frontend && yarn install && yarn dev`
-
----
-
-## 🎬 Demo
-
-Until we ship our own screenshots and a hosted demo, the closest reference is the upstream SigNoz demo (our UI is based on it):
-
-- **SigNoz live demo**: [signoz.io/demo](https://signoz.io/demo/)
-- Differences in K-O11y: integrated Beyla eBPF, ServiceMap enhancements, CRD label enrichment via Argo Rollouts support, S3 3-tier storage, 2-tier Host-Agent multi-cluster model, License Guard for enterprise distributions
 
 ---
 
@@ -354,7 +345,5 @@ Forked from [SigNoz](https://github.com/SigNoz/signoz) (MIT) and the [OpenTeleme
 <div align="center">
 
 **Built and maintained by [Wondermove](https://wondermove.net)**
-
-Based on the incredible work of [SigNoz](https://signoz.io) and the [OpenTelemetry](https://opentelemetry.io) community.
 
 </div>

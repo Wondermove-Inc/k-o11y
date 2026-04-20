@@ -57,15 +57,26 @@ _Screenshots coming soon._
 K-O11y uses a **2-tier Host-Agent model**: lightweight Agent collectors in each workload cluster ship telemetry over OTLP to a central Host cluster that stores, queries, and visualizes everything. ClickHouse is co-located on a dedicated VM (not in-cluster) for storage tiering control.
 
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': {
+  'background':'#0B1220',
+  'fontFamily':'Inter, -apple-system, system-ui, sans-serif',
+  'fontSize':'14px',
+  'primaryColor':'#1E1B4B',
+  'primaryTextColor':'#E8EBFF',
+  'primaryBorderColor':'#6D5EF9',
+  'lineColor':'#6D5EF9',
+  'clusterBkg':'#0F1530',
+  'clusterBorder':'#374151'
+}}}%%
 flowchart TB
-    subgraph AgentClusters["Agent Clusters (workload clusters, N × ...)"]
-        subgraph AgentCluster1["Agent Cluster #1"]
-            App1[Application Pods]
-            Beyla1[Beyla eBPF APM<br/>DaemonSet]
-            OtelAgent1[OTel Collector<br/>DaemonSet]
-            OtelDeploy1[OTel Collector<br/>Deployment]
-            KSM1[Kube State<br/>Metrics]
-            OtelOp1[OTel Operator]
+    subgraph AgentClusters["<b>AGENT CLUSTERS</b><br/><font color='#9CA3AF'>workload clusters · N × ...</font>"]
+        subgraph AgentCluster1["<b>Agent Cluster #1</b>"]
+            App1["<b>Application Pods</b>"]
+            Beyla1["<b>Beyla eBPF APM</b><br/><font color='#9CA3AF'>DaemonSet</font>"]
+            OtelAgent1["<b>OTel Collector</b><br/><font color='#9CA3AF'>DaemonSet</font>"]
+            OtelDeploy1["<b>OTel Collector</b><br/><font color='#9CA3AF'>Deployment</font>"]
+            KSM1["<b>Kube State Metrics</b>"]
+            OtelOp1["<b>OTel Operator</b>"]
 
             App1 -.auto-instrument.-> Beyla1
             Beyla1 --> OtelAgent1
@@ -74,21 +85,21 @@ flowchart TB
             OtelOp1 -.manages CRDs.-> OtelAgent1
         end
 
-        subgraph AgentClusterN["Agent Cluster #N"]
-            AppN[Application Pods]
-            BeylaN[Beyla eBPF]
-            OtelAgentN[OTel Collector]
+        subgraph AgentClusterN["<b>Agent Cluster #N</b>"]
+            AppN["<b>Application Pods</b>"]
+            BeylaN["<b>Beyla eBPF</b>"]
+            OtelAgentN["<b>OTel Collector</b>"]
         end
     end
 
-    subgraph HostCluster["Host Cluster (centralized observability)"]
-        Gateway["K-O11y OTel Gateway<br/>+ License Guard Extension<br/>+ License Gate Processor"]
+    subgraph HostCluster["<b>HOST CLUSTER</b><br/><font color='#9CA3AF'>centralized observability</font>"]
+        Gateway["<b>K-O11y OTel Gateway</b><br/><font color='#9CA3AF'>License Guard · License Gate</font>"]
 
-        subgraph Server["K-O11y Server"]
-            Frontend[Frontend UI<br/>React]
-            QueryService[Query Service<br/>+ S3 Tiering + SSO]
-            AlertManager[Alert Manager]
-            Core[Core API<br/>ko11y-core<br/>ServiceMap batch]
+        subgraph Server["<b>K-O11y Server</b>"]
+            Frontend["<b>Frontend UI</b><br/><font color='#9CA3AF'>React</font>"]
+            QueryService["<b>Query Service</b><br/><font color='#9CA3AF'>S3 Tiering · SSO</font>"]
+            AlertManager["<b>Alert Manager</b>"]
+            Core["<b>Core API</b><br/><font color='#9CA3AF'>ko11y-core · ServiceMap</font>"]
         end
 
         Gateway --> QueryService
@@ -97,34 +108,37 @@ flowchart TB
         Frontend --> QueryService
     end
 
-    subgraph ClickHouseVM["ClickHouse VM (dedicated)"]
-        subgraph Storage["Storage Tiers"]
-            Hot[Hot Tier<br/>EBS / SSD<br/>0-7 days]
-            Warm[Warm Tier<br/>S3 Standard<br/>7-30 days]
-            Cold[Cold Tier<br/>S3 Glacier IR<br/>30+ days<br/>via clickhouse-backup]
+    subgraph ClickHouseVM["<b>CLICKHOUSE VM</b><br/><font color='#9CA3AF'>dedicated storage</font>"]
+        subgraph Storage["<b>Storage Tiers</b>"]
+            Hot["<b>Hot</b><br/><font color='#9CA3AF'>EBS / SSD · 0-7d</font>"]
+            Warm["<b>Warm</b><br/><font color='#9CA3AF'>S3 Standard · 7-30d</font>"]
+            Cold["<b>Cold</b><br/><font color='#9CA3AF'>S3 Glacier IR · 30d+</font>"]
 
             Hot -.TTL MOVE.-> Warm
-            Warm -.Lifecycle policy.-> Cold
+            Warm -.Lifecycle.-> Cold
         end
-        DBAgent[DB Agent<br/>systemd]
+        DBAgent["<b>DB Agent</b><br/><font color='#9CA3AF'>systemd</font>"]
         DBAgent -.manages.-> Storage
     end
 
     QueryService --> Storage
     Core --> Storage
 
-    OtelAgent1 -->|OTLP gRPC :4317| Gateway
-    OtelDeploy1 -->|OTLP gRPC :4317| Gateway
-    OtelAgentN -->|OTLP gRPC :4317| Gateway
+    OtelAgent1 -->|OTLP :4317| Gateway
+    OtelDeploy1 -->|OTLP :4317| Gateway
+    OtelAgentN -->|OTLP :4317| Gateway
 
-    User[👤 User / Operator] --> Frontend
+    User["👤 <b>User / Operator</b>"] --> Frontend
 
-    classDef agent fill:#e1f5ff,stroke:#0288d1,color:#000
-    classDef host fill:#fff3e0,stroke:#f57c00,color:#000
-    classDef storage fill:#f3e5f5,stroke:#7b1fa2,color:#000
-    class AgentCluster1,AgentClusterN,App1,AppN,Beyla1,BeylaN,OtelAgent1,OtelAgentN,OtelDeploy1,KSM1,OtelOp1 agent
+    classDef agent fill:#2A1B5B,stroke:#6D5EF9,color:#E8EBFF,stroke-width:2px,rx:8,ry:8
+    classDef host fill:#1A3A4A,stroke:#4DC4E5,color:#E8F7FF,stroke-width:2px,rx:8,ry:8
+    classDef storage fill:#1F1A38,stroke:#9D7AE8,color:#EEEAFF,stroke-width:2px,rx:8,ry:8
+    classDef user fill:#0F1530,stroke:#6D5EF9,color:#E8EBFF,stroke-width:2px,rx:8,ry:8
+
+    class App1,AppN,Beyla1,BeylaN,OtelAgent1,OtelAgentN,OtelDeploy1,KSM1,OtelOp1 agent
     class Gateway,Frontend,QueryService,AlertManager,Core host
     class Hot,Warm,Cold,DBAgent storage
+    class User user
 ```
 
 **Data flow**:

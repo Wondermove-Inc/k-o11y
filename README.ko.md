@@ -57,15 +57,26 @@ _스크린샷은 곧 추가됩니다._
 K-O11y는 **2-tier Host-Agent 모델**을 사용합니다. 각 워크로드 클러스터의 경량 Agent 수집기가 OTLP로 원격측정 데이터를 전송하면, 중앙 Host 클러스터가 저장·조회·시각화를 담당합니다. ClickHouse는 스토리지 티어링 제어를 위해 전용 VM에 배치됩니다 (클러스터 외부).
 
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': {
+  'background':'#0B1220',
+  'fontFamily':'Inter, -apple-system, system-ui, sans-serif',
+  'fontSize':'14px',
+  'primaryColor':'#1E1B4B',
+  'primaryTextColor':'#E8EBFF',
+  'primaryBorderColor':'#6D5EF9',
+  'lineColor':'#6D5EF9',
+  'clusterBkg':'#0F1530',
+  'clusterBorder':'#374151'
+}}}%%
 flowchart TB
-    subgraph AgentClusters["Agent 클러스터 (워크로드 클러스터, N 개 ...)"]
-        subgraph AgentCluster1["Agent 클러스터 #1"]
-            App1[애플리케이션 Pod]
-            Beyla1[Beyla eBPF APM<br/>DaemonSet]
-            OtelAgent1[OTel Collector<br/>DaemonSet]
-            OtelDeploy1[OTel Collector<br/>Deployment]
-            KSM1[Kube State<br/>Metrics]
-            OtelOp1[OTel Operator]
+    subgraph AgentClusters["<b>AGENT 클러스터</b><br/><font color='#9CA3AF'>워크로드 클러스터 · N 개 ...</font>"]
+        subgraph AgentCluster1["<b>Agent 클러스터 #1</b>"]
+            App1["<b>애플리케이션 Pod</b>"]
+            Beyla1["<b>Beyla eBPF APM</b><br/><font color='#9CA3AF'>DaemonSet</font>"]
+            OtelAgent1["<b>OTel Collector</b><br/><font color='#9CA3AF'>DaemonSet</font>"]
+            OtelDeploy1["<b>OTel Collector</b><br/><font color='#9CA3AF'>Deployment</font>"]
+            KSM1["<b>Kube State Metrics</b>"]
+            OtelOp1["<b>OTel Operator</b>"]
 
             App1 -.자동 계측.-> Beyla1
             Beyla1 --> OtelAgent1
@@ -74,21 +85,21 @@ flowchart TB
             OtelOp1 -.CRD 관리.-> OtelAgent1
         end
 
-        subgraph AgentClusterN["Agent 클러스터 #N"]
-            AppN[애플리케이션 Pod]
-            BeylaN[Beyla eBPF]
-            OtelAgentN[OTel Collector]
+        subgraph AgentClusterN["<b>Agent 클러스터 #N</b>"]
+            AppN["<b>애플리케이션 Pod</b>"]
+            BeylaN["<b>Beyla eBPF</b>"]
+            OtelAgentN["<b>OTel Collector</b>"]
         end
     end
 
-    subgraph HostCluster["Host 클러스터 (중앙 관측성)"]
-        Gateway["K-O11y OTel Gateway<br/>+ License Guard Extension<br/>+ License Gate Processor"]
+    subgraph HostCluster["<b>HOST 클러스터</b><br/><font color='#9CA3AF'>중앙 관측성</font>"]
+        Gateway["<b>K-O11y OTel Gateway</b><br/><font color='#9CA3AF'>License Guard · License Gate</font>"]
 
-        subgraph Server["K-O11y Server"]
-            Frontend[Frontend UI<br/>React]
-            QueryService[Query Service<br/>+ S3 Tiering + SSO]
-            AlertManager[알림 매니저]
-            Core[Core API<br/>ko11y-core<br/>ServiceMap 배치]
+        subgraph Server["<b>K-O11y Server</b>"]
+            Frontend["<b>Frontend UI</b><br/><font color='#9CA3AF'>React</font>"]
+            QueryService["<b>Query Service</b><br/><font color='#9CA3AF'>S3 Tiering · SSO</font>"]
+            AlertManager["<b>알림 매니저</b>"]
+            Core["<b>Core API</b><br/><font color='#9CA3AF'>ko11y-core · ServiceMap</font>"]
         end
 
         Gateway --> QueryService
@@ -97,34 +108,37 @@ flowchart TB
         Frontend --> QueryService
     end
 
-    subgraph ClickHouseVM["ClickHouse VM (전용)"]
-        subgraph Storage["스토리지 티어"]
-            Hot[Hot 티어<br/>EBS / SSD<br/>0-7일]
-            Warm[Warm 티어<br/>S3 Standard<br/>7-30일]
-            Cold[Cold 티어<br/>S3 Glacier IR<br/>30일 이상<br/>clickhouse-backup 경유]
+    subgraph ClickHouseVM["<b>CLICKHOUSE VM</b><br/><font color='#9CA3AF'>전용 스토리지</font>"]
+        subgraph Storage["<b>스토리지 티어</b>"]
+            Hot["<b>Hot</b><br/><font color='#9CA3AF'>EBS / SSD · 0-7일</font>"]
+            Warm["<b>Warm</b><br/><font color='#9CA3AF'>S3 Standard · 7-30일</font>"]
+            Cold["<b>Cold</b><br/><font color='#9CA3AF'>S3 Glacier IR · 30일+</font>"]
 
             Hot -.TTL MOVE.-> Warm
-            Warm -.Lifecycle policy.-> Cold
+            Warm -.Lifecycle.-> Cold
         end
-        DBAgent[DB Agent<br/>systemd]
+        DBAgent["<b>DB Agent</b><br/><font color='#9CA3AF'>systemd</font>"]
         DBAgent -.관리.-> Storage
     end
 
     QueryService --> Storage
     Core --> Storage
 
-    OtelAgent1 -->|OTLP gRPC :4317| Gateway
-    OtelDeploy1 -->|OTLP gRPC :4317| Gateway
-    OtelAgentN -->|OTLP gRPC :4317| Gateway
+    OtelAgent1 -->|OTLP :4317| Gateway
+    OtelDeploy1 -->|OTLP :4317| Gateway
+    OtelAgentN -->|OTLP :4317| Gateway
 
-    User[👤 사용자 / 운영자] --> Frontend
+    User["👤 <b>사용자 / 운영자</b>"] --> Frontend
 
-    classDef agent fill:#e1f5ff,stroke:#0288d1,color:#000
-    classDef host fill:#fff3e0,stroke:#f57c00,color:#000
-    classDef storage fill:#f3e5f5,stroke:#7b1fa2,color:#000
-    class AgentCluster1,AgentClusterN,App1,AppN,Beyla1,BeylaN,OtelAgent1,OtelAgentN,OtelDeploy1,KSM1,OtelOp1 agent
+    classDef agent fill:#2A1B5B,stroke:#6D5EF9,color:#E8EBFF,stroke-width:2px,rx:8,ry:8
+    classDef host fill:#1A3A4A,stroke:#4DC4E5,color:#E8F7FF,stroke-width:2px,rx:8,ry:8
+    classDef storage fill:#1F1A38,stroke:#9D7AE8,color:#EEEAFF,stroke-width:2px,rx:8,ry:8
+    classDef user fill:#0F1530,stroke:#6D5EF9,color:#E8EBFF,stroke-width:2px,rx:8,ry:8
+
+    class App1,AppN,Beyla1,BeylaN,OtelAgent1,OtelAgentN,OtelDeploy1,KSM1,OtelOp1 agent
     class Gateway,Frontend,QueryService,AlertManager,Core host
     class Hot,Warm,Cold,DBAgent storage
+    class User user
 ```
 
 **데이터 흐름**:

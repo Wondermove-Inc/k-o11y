@@ -16,6 +16,10 @@
 
 Built on [OpenTelemetry](https://opentelemetry.io/), [Beyla eBPF](https://grafana.com/oss/beyla-ebpf/), and [ClickHouse](https://clickhouse.com/).
 
+<br/>
+
+<img src="docs/images/hero-servicemap.gif" alt="K-O11y ServiceMap — live dependency topology powered by Beyla eBPF" width="90%" />
+
 </div>
 
 ---
@@ -88,6 +92,16 @@ Built on [OpenTelemetry](https://opentelemetry.io/), [Beyla eBPF](https://grafan
 - 🔒 **Air-Gapped Ready** — Works in fully offline environments (regulated industries)
 - 📦 **Self-Hosted** — Your data never leaves your infrastructure
 - 🎫 **License Guard** — RS256 JWT-based license validation with configurable grace period (enterprise distributions)
+
+---
+
+## 🎬 Demo
+
+<div align="center">
+
+https://github.com/user-attachments/assets/097a958c-0179-4676-85d9-5de9d649c711
+
+</div>
 
 ---
 

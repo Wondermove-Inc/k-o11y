@@ -16,6 +16,10 @@
 
 [OpenTelemetry](https://opentelemetry.io/) · [Beyla eBPF](https://grafana.com/oss/beyla-ebpf/) · [ClickHouse](https://clickhouse.com/) 기반
 
+<br/>
+
+<img src="docs/images/hero-servicemap.gif" alt="K-O11y ServiceMap — Beyla eBPF 기반 실시간 의존성 토폴로지" width="90%" />
+
 </div>
 
 ---
@@ -88,6 +92,16 @@
 - 🔒 **Air-Gapped 지원** — 완전 오프라인 환경에서도 동작 (규제 산업 대응)
 - 📦 **Self-Hosted** — 데이터가 인프라 밖으로 나가지 않습니다
 - 🎫 **License Guard** — RS256 JWT 기반 라이선스 검증 + 설정 가능한 유예 기간 (엔터프라이즈 배포용)
+
+---
+
+## 🎬 Demo
+
+<div align="center">
+
+https://github.com/user-attachments/assets/097a958c-0179-4676-85d9-5de9d649c711
+
+</div>
 
 ---
 

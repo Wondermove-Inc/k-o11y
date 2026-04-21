@@ -24,6 +24,10 @@
 
 ---
 
+K-O11y는 여러 Kubernetes 클러스터의 메트릭·로그·트레이스를 통합하는 설치형 관측성 플랫폼입니다. OpenTelemetry + Beyla eBPF 기반 2-tier Host–Agent 아키텍처 + ClickHouse 저장소 + **Hot → Warm (S3) → Cold (Glacier IR)** 자동 티어링을 제공합니다.
+
+---
+
 ## 📸 스크린샷
 
 <div align="center">

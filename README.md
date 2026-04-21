@@ -24,6 +24,10 @@ Built on [OpenTelemetry](https://opentelemetry.io/), [Beyla eBPF](https://grafan
 
 ---
 
+K-O11y is a self-hosted Kubernetes observability platform that unifies metrics, logs, and traces across multiple clusters. Built on OpenTelemetry + Beyla eBPF with a 2-tier Host–Agent architecture and ClickHouse-backed storage with automatic **Hot → Warm (S3) → Cold (Glacier IR)** tiering.
+
+---
+
 ## 📸 Screenshots
 
 <div align="center">

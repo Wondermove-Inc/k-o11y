@@ -95,6 +95,24 @@ Built on [OpenTelemetry](https://opentelemetry.io/), [Beyla eBPF](https://grafan
 
 ---
 
+## 🎯 Why K-O11y?
+
+K-O11y exists to serve a specific gap: **teams who need production-grade observability but cannot use SaaS** — regulated industries, air-gapped environments, multi-cluster fleets, or teams wary of vendor lock-in.
+
+| Need | SaaS (Datadog, etc.) | DIY (Prom + Grafana + Jaeger + Loki) | K-O11y |
+|------|---|---|---|
+| Self-hosted | ❌ | ✅ | ✅ |
+| Air-gapped | ❌ | ⚠️ painful | ✅ |
+| Multi-cluster (Host-Agent) | ✅ (if you pay) | ⚠️ DIY federation | ✅ built-in |
+| Metrics + Logs + Traces unified | ✅ | ❌ 4 tools | ✅ |
+| eBPF auto-instrumentation | partial | ⚠️ DIY | ✅ Beyla integrated |
+| Cost predictability | ❌ usage-based | ✅ | ✅ |
+| Operational complexity | ✅ low | ❌ high | ⚠️ medium |
+
+**Best fit for**: on-premise K8s fleets, government / defense / finance / healthcare, edge deployments, cost-sensitive teams moving off Datadog.
+
+---
+
 ## 🎬 Demo
 
 <div align="center">
@@ -204,21 +222,22 @@ flowchart TB
 
 ---
 
-## 🎯 Why K-O11y?
+## 📦 Components
 
-K-O11y exists to serve a specific gap: **teams who need production-grade observability but cannot use SaaS** — regulated industries, air-gapped environments, multi-cluster fleets, or teams wary of vendor lock-in.
+K-O11y is composed of four repositories, included here as git submodules.
 
-| Need | SaaS (Datadog, etc.) | DIY (Prom + Grafana + Jaeger + Loki) | K-O11y |
-|------|---|---|---|
-| Self-hosted | ❌ | ✅ | ✅ |
-| Air-gapped | ❌ | ⚠️ painful | ✅ |
-| Multi-cluster (Host-Agent) | ✅ (if you pay) | ⚠️ DIY federation | ✅ built-in |
-| Metrics + Logs + Traces unified | ✅ | ❌ 4 tools | ✅ |
-| eBPF auto-instrumentation | partial | ⚠️ DIY | ✅ Beyla integrated |
-| Cost predictability | ❌ usage-based | ✅ | ✅ |
-| Operational complexity | ✅ low | ❌ high | ⚠️ medium |
+| Component | Repository | Description |
+|-----------|-----------|-------------|
+| 🧠 **Server** | [k-o11y-server](https://github.com/Wondermove-Inc/k-o11y-server) | Self-hosted observability backend. Monorepo with `packages/core` (Go API for ServiceMap and S3 Tiering, Go 1.24 + Gin + ClickHouse) and `packages/signoz` (React frontend and Query Service). |
+| 📦 **Install** | [k-o11y-install](https://github.com/Wondermove-Inc/k-o11y-install) | 6 Helm charts (`k-o11y-host`, `k-o11y-agent`, and 4 sub-charts: `k-o11y-otel-agent`, `k-o11y-apm-agent`, `k-o11y-ksm`, `k-o11y-otel-operator`) + 2 Go CLI tools: `k-o11y-db` (ClickHouse VM installer, DDL apply, S3 tiering) and `k-o11y-tls` (cert-manager setup: existing / self-signed / private-CA / Let's Encrypt). |
+| 📡 **OTel Collector** | [k-o11y-otel-collector](https://github.com/Wondermove-Inc/k-o11y-otel-collector) | Custom OTel Collector v0.109.0 distribution with **CRD Processor** — automatically adds Kubernetes CRD labels (e.g. `k8s.rollout.name` for Argo Rollouts) to traces, metrics, and logs via a K8s Informer. Extensible to Knative, KEDA, etc. |
+| 🛂 **OTel Gateway** | [k-o11y-otel-gateway](https://github.com/Wondermove-Inc/k-o11y-otel-gateway) | OTel Collector distribution with two custom components: **License Guard Extension** (RS256 JWT license validation with 7-day grace period) and **License Gate Processor** (drops telemetry when license is invalid and grace period has expired). |
 
-**Best fit for**: on-premise K8s fleets, government / defense / finance / healthcare, edge deployments, cost-sensitive teams moving off Datadog.
+**Clone with all submodules:**
+
+```bash
+git clone --recurse-submodules https://github.com/Wondermove-Inc/k-o11y.git
+```
 
 ---
 
@@ -286,25 +305,6 @@ helm upgrade --install k-o11y-agent \
 
 ---
 
-## 📦 Components
-
-K-O11y is composed of four repositories, included here as git submodules.
-
-| Component | Repository | Description |
-|-----------|-----------|-------------|
-| 🧠 **Server** | [k-o11y-server](https://github.com/Wondermove-Inc/k-o11y-server) | Self-hosted observability backend. Monorepo with `packages/core` (Go API for ServiceMap and S3 Tiering, Go 1.24 + Gin + ClickHouse) and `packages/signoz` (React frontend and Query Service). |
-| 📦 **Install** | [k-o11y-install](https://github.com/Wondermove-Inc/k-o11y-install) | 6 Helm charts (`k-o11y-host`, `k-o11y-agent`, and 4 sub-charts: `k-o11y-otel-agent`, `k-o11y-apm-agent`, `k-o11y-ksm`, `k-o11y-otel-operator`) + 2 Go CLI tools: `k-o11y-db` (ClickHouse VM installer, DDL apply, S3 tiering) and `k-o11y-tls` (cert-manager setup: existing / self-signed / private-CA / Let's Encrypt). |
-| 📡 **OTel Collector** | [k-o11y-otel-collector](https://github.com/Wondermove-Inc/k-o11y-otel-collector) | Custom OTel Collector v0.109.0 distribution with **CRD Processor** — automatically adds Kubernetes CRD labels (e.g. `k8s.rollout.name` for Argo Rollouts) to traces, metrics, and logs via a K8s Informer. Extensible to Knative, KEDA, etc. |
-| 🛂 **OTel Gateway** | [k-o11y-otel-gateway](https://github.com/Wondermove-Inc/k-o11y-otel-gateway) | OTel Collector distribution with two custom components: **License Guard Extension** (RS256 JWT license validation with 7-day grace period) and **License Gate Processor** (drops telemetry when license is invalid and grace period has expired). |
-
-**Clone with all submodules:**
-
-```bash
-git clone --recurse-submodules https://github.com/Wondermove-Inc/k-o11y.git
-```
-
----
-
 ## 🛠️ Installation
 
 There are three installation scenarios depending on your setup.
@@ -343,10 +343,8 @@ Not a commitment — a direction. Contributions welcome on any of these.
 
 - [ ] 🐳 **Publish GHCR Docker images** for all 4 components (unblocks one-line install)
 - [ ] 📦 **Publish Helm charts to OCI registry** (currently `<YOUR_REGISTRY>` placeholder)
-- [ ] 📸 **Record demo screenshots and GIFs**
 - [ ] 🏗️ **MkDocs / GitHub Pages documentation site**
 - [ ] 🌏 **Translate Korean comments in Go code to English** ([k-o11y-server#1](https://github.com/Wondermove-Inc/k-o11y-server/issues/1), [k-o11y-install#1](https://github.com/Wondermove-Inc/k-o11y-install/issues/1))
-- [ ] 🎨 **Architecture diagram in README** ([k-o11y#1](https://github.com/Wondermove-Inc/k-o11y/issues/1))
 - [ ] 🧪 **docker-compose.yml for local development**
 - [ ] 📚 **Grafana dashboard JSON presets**
 - [ ] 🔔 **Prometheus AlertManager rule presets**

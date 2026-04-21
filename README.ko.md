@@ -95,6 +95,24 @@
 
 ---
 
+## 🎯 왜 K-O11y인가?
+
+K-O11y는 특정 간극을 채우기 위해 만들어졌습니다. **운영 수준의 관측성이 필요하지만 SaaS를 쓸 수 없는 팀** — 규제 산업, 폐쇄망, 멀티클러스터 운영팀, 벤더 종속성을 경계하는 팀을 위한 솔루션입니다.
+
+| 요구사항 | SaaS (Datadog 등) | DIY (Prom + Grafana + Jaeger + Loki) | K-O11y |
+|---|---|---|---|
+| 설치형 (Self-hosted) | ❌ | ✅ | ✅ |
+| Air-gapped | ❌ | ⚠️ 어려움 | ✅ |
+| 멀티클러스터 (Host-Agent) | ✅ (유료) | ⚠️ 직접 페더레이션 | ✅ 기본 제공 |
+| 메트릭 + 로그 + 트레이스 통합 | ✅ | ❌ 도구 4개 | ✅ |
+| eBPF 자동 계측 | 부분 지원 | ⚠️ DIY | ✅ Beyla 통합 |
+| 비용 예측 가능성 | ❌ 사용량 기반 | ✅ | ✅ |
+| 운영 복잡도 | ✅ 낮음 | ❌ 높음 | ⚠️ 중간 |
+
+**최적 사용처**: 온프레미스 K8s 운영팀, 국방 / 금융 / 의료 / 공공 기관, 엣지 배포, Datadog에서 이전 고려 중인 비용 민감 팀.
+
+---
+
 ## 🎬 Demo
 
 <div align="center">
@@ -204,21 +222,22 @@ flowchart TB
 
 ---
 
-## 🎯 왜 K-O11y인가?
+## 📦 구성 요소
 
-K-O11y는 특정 간극을 채우기 위해 만들어졌습니다. **운영 수준의 관측성이 필요하지만 SaaS를 쓸 수 없는 팀** — 규제 산업, 폐쇄망, 멀티클러스터 운영팀, 벤더 종속성을 경계하는 팀을 위한 솔루션입니다.
+K-O11y는 4개 저장소로 구성되며, 본 레포에는 git submodule로 포함되어 있습니다.
 
-| 요구사항 | SaaS (Datadog 등) | DIY (Prom + Grafana + Jaeger + Loki) | K-O11y |
-|---|---|---|---|
-| 설치형 (Self-hosted) | ❌ | ✅ | ✅ |
-| Air-gapped | ❌ | ⚠️ 어려움 | ✅ |
-| 멀티클러스터 (Host-Agent) | ✅ (유료) | ⚠️ 직접 페더레이션 | ✅ 기본 제공 |
-| 메트릭 + 로그 + 트레이스 통합 | ✅ | ❌ 도구 4개 | ✅ |
-| eBPF 자동 계측 | 부분 지원 | ⚠️ DIY | ✅ Beyla 통합 |
-| 비용 예측 가능성 | ❌ 사용량 기반 | ✅ | ✅ |
-| 운영 복잡도 | ✅ 낮음 | ❌ 높음 | ⚠️ 중간 |
+| 구성 요소 | 저장소 | 설명 |
+|-----------|-------|------|
+| 🧠 **Server** | [k-o11y-server](https://github.com/Wondermove-Inc/k-o11y-server) | 설치형 관측성 백엔드. 모노레포 구성: `packages/core` (ServiceMap 및 S3 Tiering Go API, Go 1.24 + Gin + ClickHouse) + `packages/signoz` (React 프론트엔드와 Query Service). |
+| 📦 **Install** | [k-o11y-install](https://github.com/Wondermove-Inc/k-o11y-install) | 6개 Helm 차트 (`k-o11y-host`, `k-o11y-agent`, sub-chart 4개: `k-o11y-otel-agent`, `k-o11y-apm-agent`, `k-o11y-ksm`, `k-o11y-otel-operator`) + Go CLI 도구 2종: `k-o11y-db` (ClickHouse VM 설치, DDL 적용, S3 티어링), `k-o11y-tls` (cert-manager 설정: existing / self-signed / private-CA / Let's Encrypt). |
+| 📡 **OTel Collector** | [k-o11y-otel-collector](https://github.com/Wondermove-Inc/k-o11y-otel-collector) | OTel Collector v0.109.0 커스텀 배포. **CRD Processor** 탑재 — K8s Informer 기반으로 Kubernetes CRD 라벨 (예: Argo Rollouts의 `k8s.rollout.name`)을 traces, metrics, logs에 자동 추가. Knative, KEDA 등으로 확장 가능. |
+| 🛂 **OTel Gateway** | [k-o11y-otel-gateway](https://github.com/Wondermove-Inc/k-o11y-otel-gateway) | OTel Collector 배포판. 두 가지 커스텀 컴포넌트 포함: **License Guard Extension** (RS256 JWT 라이선스 검증 + 7일 유예 기간), **License Gate Processor** (라이선스 무효 + 유예 기간 종료 시 원격측정 데이터 드롭). |
 
-**최적 사용처**: 온프레미스 K8s 운영팀, 국방 / 금융 / 의료 / 공공 기관, 엣지 배포, Datadog에서 이전 고려 중인 비용 민감 팀.
+**서브모듈 포함 클론:**
+
+```bash
+git clone --recurse-submodules https://github.com/Wondermove-Inc/k-o11y.git
+```
 
 ---
 
@@ -286,25 +305,6 @@ helm upgrade --install k-o11y-agent \
 
 ---
 
-## 📦 구성 요소
-
-K-O11y는 4개 저장소로 구성되며, 본 레포에는 git submodule로 포함되어 있습니다.
-
-| 구성 요소 | 저장소 | 설명 |
-|-----------|-------|------|
-| 🧠 **Server** | [k-o11y-server](https://github.com/Wondermove-Inc/k-o11y-server) | 설치형 관측성 백엔드. 모노레포 구성: `packages/core` (ServiceMap 및 S3 Tiering Go API, Go 1.24 + Gin + ClickHouse) + `packages/signoz` (React 프론트엔드와 Query Service). |
-| 📦 **Install** | [k-o11y-install](https://github.com/Wondermove-Inc/k-o11y-install) | 6개 Helm 차트 (`k-o11y-host`, `k-o11y-agent`, sub-chart 4개: `k-o11y-otel-agent`, `k-o11y-apm-agent`, `k-o11y-ksm`, `k-o11y-otel-operator`) + Go CLI 도구 2종: `k-o11y-db` (ClickHouse VM 설치, DDL 적용, S3 티어링), `k-o11y-tls` (cert-manager 설정: existing / self-signed / private-CA / Let's Encrypt). |
-| 📡 **OTel Collector** | [k-o11y-otel-collector](https://github.com/Wondermove-Inc/k-o11y-otel-collector) | OTel Collector v0.109.0 커스텀 배포. **CRD Processor** 탑재 — K8s Informer 기반으로 Kubernetes CRD 라벨 (예: Argo Rollouts의 `k8s.rollout.name`)을 traces, metrics, logs에 자동 추가. Knative, KEDA 등으로 확장 가능. |
-| 🛂 **OTel Gateway** | [k-o11y-otel-gateway](https://github.com/Wondermove-Inc/k-o11y-otel-gateway) | OTel Collector 배포판. 두 가지 커스텀 컴포넌트 포함: **License Guard Extension** (RS256 JWT 라이선스 검증 + 7일 유예 기간), **License Gate Processor** (라이선스 무효 + 유예 기간 종료 시 원격측정 데이터 드롭). |
-
-**서브모듈 포함 클론:**
-
-```bash
-git clone --recurse-submodules https://github.com/Wondermove-Inc/k-o11y.git
-```
-
----
-
 ## 🛠️ 설치
 
 상황에 따라 세 가지 설치 시나리오가 있습니다.
@@ -343,10 +343,8 @@ helm install k-o11y oci://ghcr.io/wondermove-inc/charts/k-o11y-host \
 
 - [ ] 🐳 **4개 컴포넌트 GHCR Docker 이미지 배포** (원클릭 설치 활성화)
 - [ ] 📦 **OCI 레지스트리 Helm 차트 배포** (현재 `<YOUR_REGISTRY>` placeholder)
-- [ ] 📸 **데모 스크린샷 및 GIF 제작**
 - [ ] 🏗️ **MkDocs / GitHub Pages 문서 사이트**
 - [ ] 🌏 **Go 코드 한글 주석 → 영문 번역** ([k-o11y-server#1](https://github.com/Wondermove-Inc/k-o11y-server/issues/1), [k-o11y-install#1](https://github.com/Wondermove-Inc/k-o11y-install/issues/1))
-- [ ] 🎨 **README 아키텍처 다이어그램 개선** ([k-o11y#1](https://github.com/Wondermove-Inc/k-o11y/issues/1))
 - [ ] 🧪 **로컬 개발용 docker-compose.yml**
 - [ ] 📚 **Grafana 대시보드 JSON 프리셋**
 - [ ] 🔔 **Prometheus AlertManager 알림 룰 프리셋**
